@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEXAUR Hub</title>
+<style>
+:root {
+  --primary: #00897B;      /* Dark Teal */
+  --primary-dark: #00695C;
+  --secondary: #66BB6A;    /* Light Green */
+  --accent: #FFA726;       /* Orange */
+  --accent-alt: #AB47BC;   /* Purple */
+  --text: #E0F2F1;
+  --text-light: #B2DFDB;
+  --bg: #0A1A1A;
+  --card-bg: #1A2A2A;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.4);
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 18px;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Search Bar */
+#search-bar {
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.search-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+}
+
+#search-input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  color: var(--text);
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+#search-input:focus {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.3);
+}
+
+#search-input::placeholder {
+  color: var(--text-light);
+}
+
+/* Category Filter */
+#category-filter {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.category-btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.category-btn.active, .category-btn:hover {
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(171, 71, 188, 0.3);
+}
+
+/* App List */
+#app-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.app-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.app-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-8px);
+  border-color: rgba(102, 187, 106, 0.3);
+}
+
+.app-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.app-info {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.app-developer {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.app-description {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-light);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.app-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.app-version, .app-size, .app-updated {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-downloads {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(171, 71, 188, 0.3);
+}
+
+.download-btn:hover {
+  background: linear-gradient(135deg, var(--accent-alt), var(--accent));
+  box-shadow: 0 6px 15px rgba(171, 71, 188, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 30px 20px;
+  color: var(--text-light);
+  font-size: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--text);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+/* Settings Panel */
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title:before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: var(--secondary);
+  border-radius: 2px;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.theme-option {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.theme-option:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.theme-option.active {
+  border-color: var(--secondary);
+  background: rgba(102, 187, 106, 0.1);
+}
+
+.theme-preview {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.theme-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.about-content {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.about-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.about-item:last-child {
+  border-bottom: none;
+}
+
+.about-label {
+  color: var(--text-light);
+}
+
+.about-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Admin Panel */
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.admin-form label {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.admin-form input, .admin-form select, .admin-form textarea {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus {
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+}
+
+.admin-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  grid-column: 1 / -1;
+}
+
+.btn-primary {
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  flex: 1;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  box-shadow: 0 6px 15px rgba(0, 137, 123, 0.4);
+}
+
+.btn-secondary {
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.btn-danger {
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #FF5252, #D32F2F);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #D32F2F, #FF5252);
+  box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
+}
+
+/* Login Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-input {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.login-input:focus {
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  z-index: 1000;
+  border-left: 4px solid var(--secondary);
+  max-width: 350px;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast.error {
+  border-left-color: #FF5252;
+}
+
+/* Loading Spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 22px;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-actions {
+    flex-direction: column;
+  }
+  
+  #app-list {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .header-top {
+    padding: 12px 16px;
+  }
+  
+  .theme-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    margin: 20px;
+  }
+}
+
+/* Theme Variants */
+body.theme-light {
+  --primary: #00897B;
+  --primary-dark: #00695C;
+  --secondary: #66BB6A;
+  --accent: #FFA726;
+  --accent-alt: #AB47BC;
+  --text: #1A1A1A;
+  --text-light: #5A5A5A;
+  --bg: #F5F5F5;
+  --card-bg: #FFFFFF;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.theme-blue {
+  --primary: #1565C0;
+  --primary-dark: #0D47A1;
+  --secondary: #42A5F5;
+  --accent: #FF9800;
+  --accent-alt: #7E57C2;
+  --text: #E3F2FD;
+  --text-light: #90CAF9;
+  --bg: #0D1B2A;
+  --card-bg: #1B263B;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">W</div>
+      <span>WEXAUR Hub</span>
+    </div>
+    <div class="user-actions">
+      <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+      <button class="icon-btn" onclick="openAdminPanel()" title="Admin Panel">🔐</button>
+    </div>
+  </div>
+  
+  <div id="search-bar">
+    <div class="search-container">
+      <div class="search-icon">🔍</div>
+      <input type="text" id="search-input" placeholder="Search apps...">
+    </div>
+  </div>
+  
+  <div id="category-filter">
+    <button class="category-btn active" data-category="all">All Apps</button>
+    <button class="category-btn" data-category="tools">Tools</button>
+    <button class="category-btn" data-category="entertainment">Entertainment</button>
+    <button class="category-btn" data-category="productivity">Productivity</button>
+    <button class="category-btn" data-category="games">Games</button>
+    <button class="category-btn" data-category="social">Social</button>
+  </div>
+</header>
+
+<section id="app-list">
+  <!-- Apps will be dynamically loaded here -->
+</section>
+
+<footer>
+  <p>© 2025 WEXAUR Hub • All Rights Reserved</p>
+</footer>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Settings</h2>
+      <button class="modal-close" onclick="closeSettings()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-section">
+        <h3 class="section-title">Theme</h3>
+        <div class="theme-options">
+          <div class="theme-option active" data-theme="dark">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #0A1A1A, #1A2A2A);"></div>
+            <div class="theme-name">Dark</div>
+          </div>
+          <div class="theme-option" data-theme="light">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #F5F5F5, #FFFFFF);"></div>
+            <div class="theme-name">Light</div>
+          </div>
+          <div class="theme-option" data-theme="blue">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #0D1B2A, #1B263B);"></div>
+            <div class="theme-name">Blue</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <h3 class="section-title">About WEXAUR Hub</h3>
+        <div class="about-content">
+          <div class="about-item">
+            <span class="about-label">Version</span>
+            <span class="about-value">2.1.0</span>
+          </div>
+          <div class="about-item">
+            <span class="about-label">Release Date</span>
+            <span class="about-value">January 2025</span>
+          </div>
+          <div class="about-item">
+            <span class="about-label">Developer</span>
+            <span class="about-value">WEXAUR Team</span>
+          </div>
+        </div>
+        <p style="font-size: 14px; color: var(--text-light); margin: 0;">
+          WEXAUR Hub is a premium app distribution platform with verified and secure applications.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="admin-login-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Admin Login</h2>
+      <button class="modal-close" onclick="closeAdminLogin()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="login-form">
+        <div class="login-input-group">
+          <label for="admin-username">Username</label>
+          <input type="text" id="admin-username" class="login-input" placeholder="Enter admin username">
+        </div>
+        <div class="login-input-group">
+          <label for="admin-password">Password</label>
+          <input type="password" id="admin-password" class="login-input" placeholder="Enter admin password">
+        </div>
+        <button class="btn-primary" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel Modal -->
+<div id="admin-panel-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Admin Panel</h2>
+      <button class="modal-close" onclick="closeAdminPanel()">×</button>
+    </div>
+    <div class="modal-body">
+      <form class="admin-form" id="app-form">
+        <div class="form-group">
+          <label for="appName">App Name</label>
+          <input type="text" id="appName" placeholder="Enter app name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appDeveloper">Developer Name</label>
+          <input type="text" id="appDeveloper" placeholder="Enter developer name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appVersion">Version</label>
+          <input type="text" id="appVersion" placeholder="e.g., 1.0.0" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appSize">Size</label>
+          <input type="text" id="appSize" placeholder="e.g., 15 MB" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appLastUpdate">Last Updated</label>
+          <input type="date" id="appLastUpdate" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appCategory">Category</label>
+          <select id="appCategory" required>
+            <option value="tools">Tools</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="productivity">Productivity</option>
+            <option value="games">Games</option>
+            <option value="social">Social</option>
+          </select>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="appDesc">Description</label>
+          <textarea id="appDesc" placeholder="Enter app description" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="appImage">Icon URL</label>
+          <input type="text" id="appImage" placeholder="images/app-icon.png" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="appFile">APK Path</label>
+          <input type="text" id="appFile" placeholder="apps/app-name.apk" required>
+        </div>
+        
+        <div class="admin-actions">
+          <button type="button" class="btn-primary" onclick="addApp()">Add App</button>
+          <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+          <button type="button" class="btn-danger" onclick="clearAllApps()">Delete All Apps</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// App data - initially empty
+let apps = JSON.parse(localStorage.getItem("wexaurApps")) || [];
+
+// Admin credentials (username: wexaur, password: hub2025)
+const ADMIN_USERNAME = "W3x@ur_H1dd3n_P0rt@l_2025!_C3nt3r";
+const ADMIN_PASSWORD = "N0t!ce_Th3_D3t@il$";
+
+// Display apps
+const appList = document.getElementById('app-list');
+function renderApps() {
+  appList.innerHTML = '';
+  
+  if (apps.length === 0) {
+    appList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📱</div>
+        <h3>No Apps Available</h3>
+        <p>Add apps using the Admin Panel to get started</p>
+      </div>
+    `;
+    return;
+  }
+  
+  apps.forEach((app, index) => {
+    const appCard = document.createElement('div');
+    appCard.className = 'app-card';
+    appCard.setAttribute('data-category', app.category);
+    
+    appCard.innerHTML = `
+      <img src="${app.image}" alt="${app.name}" class="app-image" onerror="this.src='https://via.placeholder.com/300/00897B/ffffff?text=WEXAUR'">
+      <div class="app-info">
+        <h3 class="app-title">${app.name}</h3>
+        <p class="app-developer">${app.developer}</p>
+        <p class="app-description">${app.desc}</p>
+        <div class="app-meta">
+          <span class="app-version">${app.version}</span>
+          <span class="app-size">${app.size}</span>
+          <span class="app-updated">${formatDate(app.lastUpdate)}</span>
+        </div>
+        <div class="app-downloads">
+          <span>⬇️ ${formatNumber(app.downloads)} downloads</span>
+        </div>
+        <button class="download-btn" onclick="downloadApp(${index})">
+          <span>Download</span>
+        </button>
+      </div>
+    `;
+    
+    appList.appendChild(appCard);
+  });
+  
+  // Update localStorage
+  localStorage.setItem("wexaurApps", JSON.stringify(apps));
+}
+
+// Format date for display
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Format large numbers
+function formatNumber(num) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num;
+}
+
+// Search functionality
+document.getElementById('search-input').addEventListener('input', function(e) {
+  const term = e.target.value.toLowerCase();
+  
+  document.querySelectorAll('.app-card').forEach(card => {
+    const name = card.querySelector('.app-title').textContent.toLowerCase();
+    const developer = card.querySelector('.app-developer').textContent.toLowerCase();
+    const description = card.querySelector('.app-description').textContent.toLowerCase();
+    
+    const matches = name.includes(term) || developer.includes(term) || description.includes(term);
+    card.style.display = matches ? 'block' : 'none';
+  });
+});
+
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    // Update active button
+    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    
+    const category = this.getAttribute('data-category');
+    
+    document.querySelectorAll('.app-card').forEach(card => {
+      if (category === 'all' || card.getAttribute('data-category') === category) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// Download app
+function downloadApp(index) {
+  const app = apps[index];
+  
+  // Increment download count
+  apps[index].downloads++;
+  localStorage.setItem("wexaurApps", JSON.stringify(apps));
+  
+  // Update UI
+  const downloadBtn = document.querySelectorAll('.download-btn')[index];
+  downloadBtn.innerHTML = '<div class="spinner"></div>';
+  
+  // Simulate download process
+  setTimeout(() => {
+    // Create a temporary link to trigger download
+    const link = document.createElement('a');
+    link.href = app.file;
+    link.download = `${app.name.replace(/\s+/g, '-').toLowerCase()}.apk`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Update button text
+    downloadBtn.innerHTML = `<span>Downloaded (${formatNumber(apps[index].downloads)})</span>`;
+    
+    // Show success message
+    showToast('App downloaded successfully!', 'success');
+    
+    // Re-render to update download counts
+    renderApps();
+  }, 1500);
+}
+
+// Modal Functions
+function openSettings() {
+  document.getElementById('settings-modal').classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('active');
+}
+
+function openAdminPanel() {
+  document.getElementById('admin-login-modal').classList.add('active');
+}
+
+function closeAdminLogin() {
+  document.getElementById('admin-login-modal').classList.remove('active');
+}
+
+function closeAdminPanel() {
+  document.getElementById('admin-panel-modal').classList.remove('active');
+}
+
+// Admin Login
+function adminLogin() {
+  const username = document.getElementById('admin-username').value;
+  const password = document.getElementById('admin-password').value;
+  
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    closeAdminLogin();
+    document.getElementById('admin-panel-modal').classList.add('active');
+    showToast('Admin access granted!', 'success');
+  } else {
+    showToast('Invalid username or password!', 'error');
+  }
+}
+
+// Admin Panel Functions
+function addApp() {
+  const name = document.getElementById('appName').value;
+  const developer = document.getElementById('appDeveloper').value;
+  const desc = document.getElementById('appDesc').value;
+  const version = document.getElementById('appVersion').value;
+  const size = document.getElementById('appSize').value;
+  const lastUpdate = document.getElementById('appLastUpdate').value;
+  const category = document.getElementById('appCategory').value;
+  const image = document.getElementById('appImage').value;
+  const file = document.getElementById('appFile').value;
+  
+  if (!name || !developer || !desc || !version || !size || !lastUpdate || !image || !file) {
+    showToast('Please fill all fields!', 'error');
+    return;
+  }
+  
+  const newApp = {
+    name,
+    developer,
+    desc,
+    version,
+    size,
+    lastUpdate,
+    category,
+    image,
+    file,
+    downloads: 0
+  };
+  
+  apps.push(newApp);
+  localStorage.setItem("wexaurApps", JSON.stringify(apps));
+  
+  renderApps();
+  clearForm();
+  showToast('App added successfully!', 'success');
+}
+
+function clearForm() {
+  document.getElementById('app-form').reset();
+  document.getElementById('appLastUpdate').valueAsDate = new Date();
+}
+
+function clearAllApps() {
+  if (confirm('Are you sure you want to delete all apps? This action cannot be undone.')) {
+    apps = [];
+    localStorage.removeItem("wexaurApps");
+    renderApps();
+    showToast('All apps deleted!', 'success');
+  }
+}
+
+// Theme Switching
+document.querySelectorAll('.theme-option').forEach(option => {
+  option.addEventListener('click', function() {
+    document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    
+    const theme = this.getAttribute('data-theme');
+    document.body.className = `theme-${theme}`;
+    localStorage.setItem('wexaurTheme', theme);
+  });
+});
+
+// Toast notification
+function showToast(message, type = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast';
+  
+  if (type) {
+    toast.classList.add(type);
+  }
+  
+  toast.classList.add('show');
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  renderApps();
+  
+  // Set default date to today
+  document.getElementById('appLastUpdate').valueAsDate = new Date();
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('wexaurTheme') || 'dark';
+  document.body.className = `theme-${savedTheme}`;
+  
+  // Activate the correct theme option
+  document.querySelectorAll('.theme-option').forEach(option => {
+    if (option.getAttribute('data-theme') === savedTheme) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
