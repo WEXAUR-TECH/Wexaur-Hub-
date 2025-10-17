@@ -562,6 +562,78 @@ footer {
   box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
 }
 
+/* File Input Styles */
+.file-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.file-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.file-input:focus {
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+}
+
+.file-input-btn {
+  position: absolute;
+  right: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.file-input-btn:hover {
+  background: linear-gradient(135deg, var(--accent-alt), var(--accent));
+}
+
+.file-preview {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.file-preview img {
+  max-width: 100%;
+  max-height: 100px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.file-preview .file-name {
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
+}
+
 /* Login Form */
 .login-form {
   display: flex;
@@ -877,14 +949,34 @@ body.theme-blue {
           <textarea id="appDesc" placeholder="Enter app description" required></textarea>
         </div>
         
+        <!-- File Input for App Icon -->
         <div class="form-group">
-          <label for="appImage">Icon URL</label>
-          <input type="text" id="appImage" placeholder="images/app-icon.png" required>
+          <label for="appImageFile">App Icon</label>
+          <div class="file-input-group">
+            <div class="file-input-wrapper">
+              <input type="text" id="appImage" class="file-input" placeholder="Select app icon image" readonly>
+              <button type="button" class="file-input-btn" onclick="document.getElementById('appImageFile').click()">Choose File</button>
+              <input type="file" id="appImageFile" accept="image/*" style="display: none" onchange="handleImageSelect(event)">
+            </div>
+            <div id="imagePreview" class="file-preview" style="display: none;">
+              <!-- Image preview will appear here -->
+            </div>
+          </div>
         </div>
         
+        <!-- File Input for APK File -->
         <div class="form-group">
-          <label for="appFile">APK Path</label>
-          <input type="text" id="appFile" placeholder="apps/app-name.apk" required>
+          <label for="appApkFile">APK File</label>
+          <div class="file-input-group">
+            <div class="file-input-wrapper">
+              <input type="text" id="appFile" class="file-input" placeholder="Select APK file" readonly>
+              <button type="button" class="file-input-btn" onclick="document.getElementById('appApkFile').click()">Choose File</button>
+              <input type="file" id="appApkFile" accept=".apk" style="display: none" onchange="handleApkSelect(event)">
+            </div>
+            <div id="apkPreview" class="file-preview" style="display: none;">
+              <!-- APK file info will appear here -->
+            </div>
+          </div>
         </div>
         
         <div class="admin-actions">
@@ -903,9 +995,13 @@ body.theme-blue {
 // App data - initially empty
 let apps = JSON.parse(localStorage.getItem("wexaurApps")) || [];
 
-// Admin credentials (username: wexaur, password: hub2025)
+// Admin credentials
 const ADMIN_USERNAME = "W3x@ur_H1dd3n_P0rt@l_2025!_C3nt3r";
 const ADMIN_PASSWORD = "N0t!ce_Th3_D3t@il$";
+
+// Store selected files
+let selectedImageFile = null;
+let selectedApkFile = null;
 
 // Display apps
 const appList = document.getElementById('app-list');
@@ -953,6 +1049,73 @@ function renderApps() {
   
   // Update localStorage
   localStorage.setItem("wexaurApps", JSON.stringify(apps));
+}
+
+// Handle image file selection
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    selectedImageFile = file;
+    document.getElementById('appImage').value = file.name;
+    
+    // Show preview
+    const preview = document.getElementById('imagePreview');
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <img src="${e.target.result}" alt="Preview">
+          <div class="file-name">${file.name}</div>
+          <div>Size: ${formatFileSize(file.size)}</div>
+        `;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      preview.innerHTML = `
+        <div class="file-name">${file.name}</div>
+        <div>Size: ${formatFileSize(file.size)}</div>
+        <div style="color: #FF5252;">Please select an image file</div>
+      `;
+      preview.style.display = 'block';
+    }
+  }
+}
+
+// Handle APK file selection
+function handleApkSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    selectedApkFile = file;
+    document.getElementById('appFile').value = file.name;
+    
+    // Show preview
+    const preview = document.getElementById('apkPreview');
+    if (file.name.toLowerCase().endsWith('.apk')) {
+      preview.innerHTML = `
+        <div class="file-name">${file.name}</div>
+        <div>Size: ${formatFileSize(file.size)}</div>
+        <div>Type: Android Application</div>
+      `;
+      preview.style.display = 'block';
+    } else {
+      preview.innerHTML = `
+        <div class="file-name">${file.name}</div>
+        <div>Size: ${formatFileSize(file.size)}</div>
+        <div style="color: #FF5252;">Please select an APK file</div>
+      `;
+      preview.style.display = 'block';
+    }
+  }
+}
+
+// Format file size
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // Format date for display
@@ -1056,6 +1219,11 @@ function closeAdminLogin() {
 
 function closeAdminPanel() {
   document.getElementById('admin-panel-modal').classList.remove('active');
+  // Reset file selections when closing admin panel
+  selectedImageFile = null;
+  selectedApkFile = null;
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('apkPreview').style.display = 'none';
 }
 
 // Admin Login
@@ -1081,13 +1249,27 @@ function addApp() {
   const size = document.getElementById('appSize').value;
   const lastUpdate = document.getElementById('appLastUpdate').value;
   const category = document.getElementById('appCategory').value;
-  const image = document.getElementById('appImage').value;
-  const file = document.getElementById('appFile').value;
   
-  if (!name || !developer || !desc || !version || !size || !lastUpdate || !image || !file) {
-    showToast('Please fill all fields!', 'error');
+  // Validate required fields
+  if (!name || !developer || !desc || !version || !size || !lastUpdate) {
+    showToast('Please fill all required fields!', 'error');
     return;
   }
+  
+  // Validate files
+  if (!selectedImageFile) {
+    showToast('Please select an app icon image!', 'error');
+    return;
+  }
+  
+  if (!selectedApkFile) {
+    showToast('Please select an APK file!', 'error');
+    return;
+  }
+  
+  // Create object URLs for the files
+  const imageUrl = URL.createObjectURL(selectedImageFile);
+  const apkUrl = URL.createObjectURL(selectedApkFile);
   
   const newApp = {
     name,
@@ -1097,8 +1279,8 @@ function addApp() {
     size,
     lastUpdate,
     category,
-    image,
-    file,
+    image: imageUrl,
+    file: apkUrl,
     downloads: 0
   };
   
@@ -1113,6 +1295,16 @@ function addApp() {
 function clearForm() {
   document.getElementById('app-form').reset();
   document.getElementById('appLastUpdate').valueAsDate = new Date();
+  
+  // Clear file selections and previews
+  selectedImageFile = null;
+  selectedApkFile = null;
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('apkPreview').style.display = 'none';
+  
+  // Clear file input hidden fields
+  document.getElementById('appImageFile').value = '';
+  document.getElementById('appApkFile').value = '';
 }
 
 function clearAllApps() {
