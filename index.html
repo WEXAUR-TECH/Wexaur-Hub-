@@ -677,6 +677,21 @@
             margin-top: 20px;
             text-align: center;
         }
+        
+        .delete-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d33426;
+        }
     </style>
 </head>
 <body>
@@ -752,11 +767,6 @@
             </div>
             <div class="apps-grid" id="featuredApps">
                 <!-- Apps will be dynamically loaded here -->
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <h3>No Apps Available</h3>
-                    <p>Add your first app using the Admin panel</p>
-                </div>
             </div>
 
             <!-- New Releases -->
@@ -766,11 +776,6 @@
             </div>
             <div class="apps-grid" id="newReleases">
                 <!-- Apps will be dynamically loaded here -->
-                <div class="empty-state">
-                    <i class="fas fa-rocket"></i>
-                    <h3>No New Releases</h3>
-                    <p>Add new apps to see them here</p>
-                </div>
             </div>
 
             <!-- Popular Games -->
@@ -780,11 +785,6 @@
             </div>
             <div class="apps-grid" id="popularGames">
                 <!-- Games will be dynamically loaded here -->
-                <div class="empty-state">
-                    <i class="fas fa-gamepad"></i>
-                    <h3>No Games Available</h3>
-                    <p>Add games to see them here</p>
-                </div>
             </div>
         </div>
 
@@ -850,18 +850,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label>App File</label>
+                    <label>APK File (Required)</label>
                     <div class="file-upload">
-                        <input type="file" id="appFile" class="file-input" accept=".apk,.zip,.exe,.dmg" required>
+                        <input type="file" id="appFile" class="file-input" accept=".apk" required>
                         <label for="appFile" class="file-label">
-                            <i class="fas fa-upload"></i> Choose App File
+                            <i class="fas fa-upload"></i> Choose APK File
                         </label>
                         <div id="appFileName" class="small-muted">No file chosen</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>App Logo</label>
+                    <label>App Logo (Optional)</label>
                     <div class="file-upload">
                         <input type="file" id="appLogoFile" class="file-input" accept="image/*">
                         <label for="appLogoFile" class="file-label">
@@ -872,7 +872,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>App Screenshots</label>
+                    <label>App Screenshots (Optional)</label>
                     <div class="file-upload">
                         <input type="file" id="appScreenshots" class="file-input" accept="image/*" multiple>
                         <label for="appScreenshots" class="file-label">
@@ -896,6 +896,14 @@
                 <h4><i class="fas fa-info-circle"></i> Admin Information</h4>
                 <p>Secret Key: <code>wex3aur202ms1310s19r18WEXAUR</code></p>
                 <small>This key is required to access the admin panel. Contact developer if you need access.</small>
+            </div>
+            
+            <!-- Apps Management Section -->
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--gray-light);">
+                <h3 style="margin-bottom: 20px;">Manage Existing Apps</h3>
+                <div id="appsList" class="apps-grid">
+                    <!-- Existing apps will be listed here -->
+                </div>
             </div>
         </div>
     </div>
@@ -943,7 +951,7 @@
         </div>
     </footer>
 
-    <!-- Settings Modal - UPDATED (No Secret Key Option) -->
+    <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -978,8 +986,8 @@
     </div>
 
     <script>
-        // Empty apps data - no fake apps
-        let apps = [];
+        // Apps data - now using localStorage for persistence
+        let apps = JSON.parse(localStorage.getItem('wexaur_apps')) || [];
 
         // DOM Elements
         const mainContent = document.getElementById('mainContent');
@@ -993,13 +1001,20 @@
         const searchInput = document.getElementById('searchInput');
         const navTabs = document.querySelectorAll('.nav-tab');
         const appForm = document.getElementById('appForm');
+        const appsList = document.getElementById('appsList');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             renderApps();
+            renderAppsList();
             setupEventListeners();
             loadSettings();
         });
+
+        // Save apps to localStorage
+        function saveApps() {
+            localStorage.setItem('wexaur_apps', JSON.stringify(apps));
+        }
 
         // Setup event listeners
         function setupEventListeners() {
@@ -1031,7 +1046,19 @@
             
             // File upload handlers
             document.getElementById('appFile').addEventListener('change', function(e) {
-                document.getElementById('appFileName').textContent = e.target.files.length > 0 ? e.target.files[0].name : 'No file chosen';
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate APK file
+                    if (!file.name.toLowerCase().endsWith('.apk')) {
+                        alert('कृपया केवल APK फाइलें चुनें!');
+                        e.target.value = '';
+                        document.getElementById('appFileName').textContent = 'No file chosen';
+                        return;
+                    }
+                    document.getElementById('appFileName').textContent = file.name;
+                } else {
+                    document.getElementById('appFileName').textContent = 'No file chosen';
+                }
             });
             
             document.getElementById('appLogoFile').addEventListener('change', function(e) {
@@ -1131,6 +1158,49 @@
             }
         }
 
+        // Render apps list in admin panel
+        function renderAppsList() {
+            appsList.innerHTML = '';
+            
+            if (apps.length === 0) {
+                appsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Apps Added Yet</h3>
+                        <p>Add your first app using the form above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            apps.forEach(app => {
+                const appElement = document.createElement('div');
+                appElement.className = 'app-card';
+                appElement.innerHTML = `
+                    <div class="app-content">
+                        <div class="app-header">
+                            <div class="app-icon">${app.icon}</div>
+                            <div class="app-info">
+                                <div class="app-name">${app.name}</div>
+                                <div class="app-developer">${app.developer}</div>
+                            </div>
+                        </div>
+                        <div class="app-description">${app.description}</div>
+                        <div class="app-meta">
+                            <div class="app-size"><i class="fas fa-download"></i> ${app.size} MB</div>
+                            <div class="app-version"><i class="fas fa-code-branch"></i> v${app.version}</div>
+                        </div>
+                        <div class="app-actions">
+                            <button class="delete-btn" onclick="deleteApp(${app.id})">
+                                <i class="fas fa-trash"></i> Delete App
+                            </button>
+                        </div>
+                    </div>
+                `;
+                appsList.appendChild(appElement);
+            });
+        }
+
         // Create app card element
         function createAppCard(app) {
             const card = document.createElement('div');
@@ -1179,12 +1249,13 @@
 
         // Show admin panel
         function showAdminPanel() {
-            const storedKey = 'wex3aur202ms1310s19r18WEXAUR'; // Hardcoded secret key
+            const storedKey = 'wex3aur202ms1310s19r18WEXAUR';
             const userKey = prompt('Enter admin secret key:');
             
             if (userKey === storedKey) {
                 mainContent.style.display = 'none';
                 adminPanel.classList.add('open');
+                renderAppsList();
             } else {
                 alert('Invalid secret key! Access denied.');
             }
@@ -1302,41 +1373,134 @@
             const screenshotFiles = document.getElementById('appScreenshots').files;
             
             if (!appFile) {
-                alert('Please select an app file to upload');
+                alert('Please select an APK file to upload');
                 return;
             }
 
-            // Create file URLs (in a real app, these would be uploaded to a server)
-            const appFileUrl = URL.createObjectURL(appFile);
-            const logoUrl = logoFile ? URL.createObjectURL(logoFile) : null;
-            const screenshotUrls = [];
-            
-            for (let i = 0; i < screenshotFiles.length; i++) {
-                screenshotUrls.push(URL.createObjectURL(screenshotFiles[i]));
+            // Validate APK file
+            if (!appFile.name.toLowerCase().endsWith('.apk')) {
+                alert('कृपया केवल APK फाइलें चुनें!');
+                return;
             }
 
-            const newApp = {
-                id: apps.length + 1,
-                name: document.getElementById('appName').value,
-                developer: document.getElementById('appDeveloper').value,
-                description: document.getElementById('appDescription').value,
-                category: document.getElementById('appCategory').value,
-                size: parseInt(document.getElementById('appSize').value),
-                version: document.getElementById('appVersion').value,
-                icon: document.getElementById('appIcon').value,
-                download: appFileUrl,
-                logoUrl: logoUrl,
-                screenshots: screenshotUrls,
-                featured: true,
-                new: true
-            };
+            // Create file URLs and convert to base64 for permanent storage
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const appFileData = e.target.result;
+                
+                // Process logo if available
+                if (logoFile) {
+                    const logoReader = new FileReader();
+                    logoReader.onload = function(e) {
+                        const logoData = e.target.result;
+                        
+                        // Process screenshots if available
+                        const screenshotReaders = [];
+                        const screenshotData = [];
+                        
+                        function processScreenshots(index) {
+                            if (index >= screenshotFiles.length) {
+                                // All files processed, create app object
+                                const newApp = {
+                                    id: Date.now(), // Use timestamp for unique ID
+                                    name: document.getElementById('appName').value,
+                                    developer: document.getElementById('appDeveloper').value,
+                                    description: document.getElementById('appDescription').value,
+                                    category: document.getElementById('appCategory').value,
+                                    size: parseInt(document.getElementById('appSize').value),
+                                    version: document.getElementById('appVersion').value,
+                                    icon: document.getElementById('appIcon').value,
+                                    download: appFileData,
+                                    logoUrl: logoData,
+                                    screenshots: screenshotData,
+                                    featured: true,
+                                    new: true,
+                                    fileName: appFile.name,
+                                    timestamp: new Date().toISOString()
+                                };
 
-            apps.unshift(newApp);
-            renderApps();
-            clearForm();
-            showMainContent();
-            
-            alert('App added successfully!');
+                                apps.unshift(newApp);
+                                saveApps();
+                                renderApps();
+                                renderAppsList();
+                                clearForm();
+                                showMainContent();
+                                
+                                alert('App successfully added and saved!');
+                                return;
+                            }
+                            
+                            const screenshotReader = new FileReader();
+                            screenshotReader.onload = function(e) {
+                                screenshotData.push(e.target.result);
+                                processScreenshots(index + 1);
+                            };
+                            screenshotReader.readAsDataURL(screenshotFiles[index]);
+                        }
+                        
+                        processScreenshots(0);
+                    };
+                    logoReader.readAsDataURL(logoFile);
+                } else {
+                    // No logo, just process screenshots
+                    const screenshotReaders = [];
+                    const screenshotData = [];
+                    
+                    function processScreenshots(index) {
+                        if (index >= screenshotFiles.length) {
+                            // All files processed, create app object
+                            const newApp = {
+                                id: Date.now(),
+                                name: document.getElementById('appName').value,
+                                developer: document.getElementById('appDeveloper').value,
+                                description: document.getElementById('appDescription').value,
+                                category: document.getElementById('appCategory').value,
+                                size: parseInt(document.getElementById('appSize').value),
+                                version: document.getElementById('appVersion').value,
+                                icon: document.getElementById('appIcon').value,
+                                download: appFileData,
+                                logoUrl: null,
+                                screenshots: screenshotData,
+                                featured: true,
+                                new: true,
+                                fileName: appFile.name,
+                                timestamp: new Date().toISOString()
+                            };
+
+                            apps.unshift(newApp);
+                            saveApps();
+                            renderApps();
+                            renderAppsList();
+                            clearForm();
+                            showMainContent();
+                            
+                            alert('App successfully added and saved!');
+                            return;
+                        }
+                        
+                        const screenshotReader = new FileReader();
+                        screenshotReader.onload = function(e) {
+                            screenshotData.push(e.target.result);
+                            processScreenshots(index + 1);
+                        };
+                        screenshotReader.readAsDataURL(screenshotFiles[index]);
+                    }
+                    
+                    processScreenshots(0);
+                }
+            };
+            reader.readAsDataURL(appFile);
+        }
+
+        // Delete app
+        function deleteApp(appId) {
+            if (confirm('Are you sure you want to delete this app?')) {
+                apps = apps.filter(app => app.id !== appId);
+                saveApps();
+                renderApps();
+                renderAppsList();
+                alert('App deleted successfully!');
+            }
         }
 
         // Clear form
@@ -1347,16 +1511,28 @@
             document.getElementById('screenshotsCount').textContent = 'No files chosen';
         }
 
-        // Download app (simulated)
+        // Download app
         function downloadApp(appId) {
             const app = apps.find(a => a.id === appId);
-            alert(`Downloading ${app.name}...\n\nThis is a demo. In a real app, the file would be downloaded from: ${app.download}`);
+            if (app && app.download) {
+                // Create download link
+                const link = document.createElement('a');
+                link.href = app.download;
+                link.download = app.fileName || `${app.name}.apk`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert(`Downloading ${app.name}...`);
+            } else {
+                alert('Download file not available!');
+            }
         }
 
-        // Show app details (simulated)
+        // Show app details
         function showAppDetails(appId) {
             const app = apps.find(a => a.id === appId);
-            alert(`App Details:\n\nName: ${app.name}\nDeveloper: ${app.developer}\nVersion: ${app.version}\nSize: ${app.size} MB\n\nDescription: ${app.description}`);
+            alert(`App Details:\n\nName: ${app.name}\nDeveloper: ${app.developer}\nVersion: ${app.version}\nSize: ${app.size} MB\nCategory: ${app.category}\n\nDescription: ${app.description}`);
         }
 
         // Load settings from localStorage
