@@ -498,13 +498,6 @@
             box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
 
-        .secret-key-section {
-            background: rgba(26, 115, 232, 0.05);
-            padding: 15px;
-            border-radius: var(--radius);
-            margin-top: 20px;
-        }
-
         /* Admin Panel */
         .admin-panel {
             display: none;
@@ -670,6 +663,20 @@
             margin-bottom: 16px;
             color: var(--gray-light);
         }
+        
+        .readonly-field {
+            background-color: var(--gray-light) !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .admin-info {
+            background: rgba(26, 115, 232, 0.05);
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -709,9 +716,16 @@
             <div class="nav-tab active" data-tab="home">Home</div>
             <div class="nav-tab" data-tab="apps">Apps</div>
             <div class="nav-tab" data-tab="games">Games</div>
-            <div class="nav-tab" data-tab="education">Education</div>
+            <div class="nav-tab" data-tab="tools">Tools</div>
             <div class="nav-tab" data-tab="productivity">Productivity</div>
             <div class="nav-tab" data-tab="entertainment">Entertainment</div>
+            <div class="nav-tab" data-tab="education">Education</div>
+            <div class="nav-tab" data-tab="business">Business</div>
+            <div class="nav-tab" data-tab="social">Social</div>
+            <div class="nav-tab" data-tab="photography">Photography</div>
+            <div class="nav-tab" data-tab="music">Music</div>
+            <div class="nav-tab" data-tab="health">Health</div>
+            <div class="nav-tab" data-tab="finance">Finance</div>
         </div>
     </div>
 
@@ -806,9 +820,16 @@
                             <option value="">Select Category</option>
                             <option value="apps">Apps</option>
                             <option value="games">Games</option>
-                            <option value="education">Education</option>
+                            <option value="tools">Tools</option>
                             <option value="productivity">Productivity</option>
                             <option value="entertainment">Entertainment</option>
+                            <option value="education">Education</option>
+                            <option value="business">Business</option>
+                            <option value="social">Social</option>
+                            <option value="photography">Photography</option>
+                            <option value="music">Music</option>
+                            <option value="health">Health</option>
+                            <option value="finance">Finance</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -870,6 +891,12 @@
                     </button>
                 </div>
             </form>
+            
+            <div class="admin-info">
+                <h4><i class="fas fa-info-circle"></i> Admin Information</h4>
+                <p>Secret Key: <code>wex3aur202ms1310s19r18WEXAUR</code></p>
+                <small>This key is required to access the admin panel. Contact developer if you need access.</small>
+            </div>
         </div>
     </div>
 
@@ -886,8 +913,9 @@
                     <ul class="footer-links">
                         <li><a href="#">Apps</a></li>
                         <li><a href="#">Games</a></li>
-                        <li><a href="#">Education</a></li>
+                        <li><a href="#">Tools</a></li>
                         <li><a href="#">Productivity</a></li>
+                        <li><a href="#">Entertainment</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -910,37 +938,41 @@
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2024 WEXAUR HUB. All rights reserved.
+                &copy; 2025 WEXAUR HUB. All rights reserved.
             </div>
         </div>
     </footer>
 
-    <!-- Settings Modal -->
+    <!-- Settings Modal - UPDATED (No Secret Key Option) -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Settings</h2>
+                <h2 class="modal-title">App Settings</h2>
                 <button class="close-btn" id="closeSettings">&times;</button>
             </div>
             
             <div class="form-group">
-                <label for="appVersion">App Version</label>
-                <input type="text" id="appVersionSetting" class="form-control" value="1.0.0">
+                <label for="appVersionSetting">App Version</label>
+                <input type="text" id="appVersionSetting" class="form-control readonly-field" value="1.0.0" readonly>
+                <small style="color: var(--gray);">WEXAUR HUB App Store Version</small>
             </div>
             
             <div class="form-group">
                 <label for="aboutText">About</label>
-                <textarea id="aboutText" class="form-control">WEXAUR HUB — Central place for your WEXAUR apps.</textarea>
+                <textarea id="aboutText" class="form-control readonly-field" readonly>WEXAUR HUB — Central place for your WEXAUR apps. Discover amazing applications and games for all your devices.</textarea>
+                <small style="color: var(--gray);">About WEXAUR HUB App Store</small>
             </div>
             
-            <div class="secret-key-section">
-                <div class="form-group">
-                    <label for="secretKey">Secret Key (Admin Access)</label>
-                    <input type="password" id="secretKey" class="form-control" placeholder="Enter secret key to access admin panel">
+            <div class="form-group">
+                <label>Theme</label>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i> Light
+                    </button>
+                    <button class="btn btn-outline" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i> Dark
+                    </button>
                 </div>
-                <button class="btn btn-primary" id="saveSettings">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
             </div>
         </div>
     </div>
@@ -961,8 +993,6 @@
         const searchInput = document.getElementById('searchInput');
         const navTabs = document.querySelectorAll('.nav-tab');
         const appForm = document.getElementById('appForm');
-        const saveSettings = document.getElementById('saveSettings');
-        const secretKey = document.getElementById('secretKey');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -998,9 +1028,6 @@
 
             // Form submission
             appForm.addEventListener('submit', addNewApp);
-            
-            // Save settings
-            saveSettings.addEventListener('click', saveAppSettings);
             
             // File upload handlers
             document.getElementById('appFile').addEventListener('change', function(e) {
@@ -1152,14 +1179,14 @@
 
         // Show admin panel
         function showAdminPanel() {
-            const storedKey = localStorage.getItem('wexaur_secret_key') || 'wexaur2024';
+            const storedKey = 'wex3aur202ms1310s19r18WEXAUR'; // Hardcoded secret key
             const userKey = prompt('Enter admin secret key:');
             
             if (userKey === storedKey) {
                 mainContent.style.display = 'none';
                 adminPanel.classList.add('open');
             } else {
-                alert('Invalid secret key!');
+                alert('Invalid secret key! Access denied.');
             }
         }
 
@@ -1180,6 +1207,20 @@
                 icon.className = 'fas fa-moon';
                 localStorage.setItem('wexaur_theme', 'light');
             }
+        }
+
+        // Set theme directly
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+                localStorage.setItem('wexaur_theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.querySelector('i').className = 'fas fa-moon';
+                localStorage.setItem('wexaur_theme', 'light');
+            }
+            settingsModal.classList.remove('open');
         }
 
         // Search apps
@@ -1325,40 +1366,6 @@
                 document.body.classList.add('dark-mode');
                 themeToggle.querySelector('i').className = 'fas fa-sun';
             }
-            
-            const savedVersion = localStorage.getItem('wexaur_version');
-            if (savedVersion) {
-                document.getElementById('appVersionSetting').value = savedVersion;
-            }
-            
-            const savedAbout = localStorage.getItem('wexaur_about');
-            if (savedAbout) {
-                document.getElementById('aboutText').value = savedAbout;
-            }
-            
-            // Set default secret key if not exists
-            if (!localStorage.getItem('wexaur_secret_key')) {
-                localStorage.setItem('wexaur_secret_key', 'wexaur2024');
-            }
-        }
-
-        // Save settings to localStorage
-        function saveAppSettings() {
-            const version = document.getElementById('appVersionSetting').value;
-            const about = document.getElementById('aboutText').value;
-            const key = document.getElementById('secretKey').value;
-            
-            localStorage.setItem('wexaur_version', version);
-            localStorage.setItem('wexaur_about', about);
-            
-            if (key) {
-                localStorage.setItem('wexaur_secret_key', key);
-                alert('Settings saved successfully!');
-            } else {
-                alert('Settings saved, but secret key was not updated.');
-            }
-            
-            settingsModal.classList.remove('open');
         }
     </script>
 </body>
